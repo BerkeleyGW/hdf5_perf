@@ -1,0 +1,104 @@
+
+USING DEFAULT MPIIO PARAMETERS
+==============================
+
+
+TESTING COLLECTING MPIIO
+------------------------
+
+Parameters:
+----------
+- Dataset size: 40000000 x 50
+- Number of processors: 20
+- Block size: 2000000
+- Output file size: 14.901 GB
+- Size of smallest contiguous memory written to file in...
+  - Test 1: 15.259 MB
+  - Test 2: 762.939 MB
+- Using collective MPIIO driver
+
+Creating file output.h5
+Test 1: parallelizing over fast dimension
+Done. Time elapsed: 22.098 s
+Bandwidth: .674 GB/s
+
+Test 2: parallelizing over slow dimension
+Done. Time elapsed: 24.590 s
+Bandwidth: .606 GB/s
+
+
+TESTING INDEPENDENT MPIIO
+-------------------------
+
+Parameters:
+----------
+- Dataset size: 40000000 x 50
+- Number of processors: 20
+- Block size: 2000000
+- Output file size: 14.901 GB
+- Size of smallest contiguous memory written to file in...
+  - Test 1: 15.259 MB
+  - Test 2: 762.939 MB
+- Using independent MPIIO driver
+
+Creating file output.h5
+Test 1: parallelizing over fast dimension
+Done. Time elapsed: 41.076 s
+Bandwidth: .363 GB/s
+
+Test 2: parallelizing over slow dimension
+Done. Time elapsed: 3.872 s
+Bandwidth: 3.848 GB/s
+
+
+USING MPICH_MPIIO_HINTS='*:romio_cb_write=disable:romio_ds_write=disable'
+=========================
+
+
+TESTING COLLECTING MPIIO
+------------------------
+
+Parameters:
+----------
+- Dataset size: 40000000 x 50
+- Number of processors: 20
+- Block size: 2000000
+- Output file size: 14.901 GB
+- Size of smallest contiguous memory written to file in...
+  - Test 1: 15.259 MB
+  - Test 2: 762.939 MB
+- Using collective MPIIO driver
+
+Creating file output.h5
+Test 1: parallelizing over fast dimension
+Done. Time elapsed: 40.747 s
+Bandwidth: .366 GB/s
+
+Test 2: parallelizing over slow dimension
+Done. Time elapsed: 4.132 s
+Bandwidth: 3.606 GB/s
+
+
+TESTING INDEPENDENT MPIIO
+-------------------------
+
+Parameters:
+----------
+- Dataset size: 40000000 x 50
+- Number of processors: 20
+- Block size: 2000000
+- Output file size: 14.901 GB
+- Size of smallest contiguous memory written to file in...
+  - Test 1: 15.259 MB
+  - Test 2: 762.939 MB
+- Using independent MPIIO driver
+
+Creating file output.h5
+Test 1: parallelizing over fast dimension
+Done. Time elapsed: 37.998 s
+Bandwidth: .392 GB/s
+
+Test 2: parallelizing over slow dimension
+Done. Time elapsed: 4.154 s
+Bandwidth: 3.587 GB/s
+
