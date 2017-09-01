@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #SBATCH -p debug
-#SBATCH -t 00:10:00
+#SBATCH -t 00:15:00
 #SBATCH -N 20
 #SBATCH -C knl,quad,cache
 #SBATCH -S 4
@@ -57,6 +57,27 @@ $exe $n1 $n2 F
 
 
 export MPICH_MPIIO_HINTS="*:romio_cb_write=disable:romio_ds_write=disable"
+echo
+echo "USING MPICH_MPIIO_HINTS='$MPICH_MPIIO_HINTS'"
+echo '========================='
+echo
+
+echo
+echo 'TESTING COLLECTING MPIIO'
+echo '------------------------'
+echo
+set_stripe_1
+$exe $n1 $n2 T
+
+
+echo
+echo 'TESTING INDEPENDENT MPIIO'
+echo '-------------------------'
+echo
+set_stripe_1
+$exe $n1 $n2 F
+
+export MPICH_MPIIO_HINTS="*:romio_cb_write=enable:romio_ds_write=disable"
 echo
 echo "USING MPICH_MPIIO_HINTS='$MPICH_MPIIO_HINTS'"
 echo '========================='

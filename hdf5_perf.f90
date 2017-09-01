@@ -25,9 +25,11 @@ program hdf5_perf
   call MPI_Comm_size(MPI_COMM_WORLD, npes, errcode)
   call MPI_Comm_rank(MPI_COMM_WORLD, mype, errcode)
 
-  ! block size
+  ! block size to distribute large dimension
   nb = (dset_size(1) + npes - 1)/npes
+  ! size of the contiguous chunk of the large dimension that I own
   loc_size = NUMROC(dset_size(1), nb, mype, 0, npes)
+  ! total size of each dataset on disk
   file_size_GB = product(dset_size)*8d0/(1024d0*1024d0*1024d0)
   if (mype==0) then
     print '(a)', 'Parameters:'
@@ -99,6 +101,9 @@ subroutine write_file(para_dim)
   real(DP) :: clock_inv_rate, t0, t1
 
   write(dset_name,'(a,i1)') 'dset_', para_dim
+  ! FHJ: In test #1, we lay out the array as (long_axis, short_axis);
+  ! in test #2, we lay out as (short_axis, long_axis). We always distribute
+  ! the array over the long axis, and the first axis represents the fast index.
   if (para_dim==1) then
     allocate(loc_buf(max(1,loc_size),dset_size(2)))
   elseif (para_dim==2) then
@@ -120,9 +125,6 @@ subroutine write_file(para_dim)
   call system_clock(count=clock_count)
   t0 = clock_count * clock_inv_rate
 
-  call h5fopen_f(fname, H5F_ACC_RDWR_F, file_id, errcode)
-  call check_hdf5_error(errcode)
-
   call h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, errcode)
   if (npes>1) then
     call h5pset_fapl_mpio_f(plist_id, MPI_COMM_WORLD, MPI_INFO_NULL, errcode)
@@ -134,11 +136,13 @@ subroutine write_file(para_dim)
   call h5dget_space_f(dset_id, filespace, errcode)
   mem_count(1) = loc_size
   mem_count(2) = dset_size(2)
+  ! FHJ: In test #2 we transpose the data, both the local and file buffer
   if (para_dim==2) mem_count = mem_count(2:1:-1)
   call h5screate_simple_f(2, mem_count, memspace, errcode)
   if (loc_size>0) then
     offsetf(1) = INDXL2G(1, nb, mype, 0, npes) - 1
     offsetf(2) = 0
+    ! FHJ: In test #2 we transpose the data, both the local and file buffer
     if (para_dim==2) offsetf = offsetf(2:1:-1)
     call h5sselect_hyperslab_f(filespace, H5S_SELECT_SET_F, offsetf, mem_count, errcode)
   else
